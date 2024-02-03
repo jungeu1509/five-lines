@@ -52,7 +52,6 @@ interface Tile {
   isLock1(): boolean;
   isKey2(): boolean;
   isLock2(): boolean;
-  isStony(): boolean;
   isBoxy(): boolean;
   draw(g: CanvasRenderingContext2D, x: number, y: number) : void;
   moveHorizontal(dx: number): void;
@@ -94,9 +93,6 @@ class Air implements Tile {
     return false;
   }
   isLock2(): boolean {
-    return false;
-  }
-  isStony(): boolean {
     return false;
   }
   isBoxy(): boolean {
@@ -148,9 +144,6 @@ class Player implements Tile {
   isLock2(): boolean {
     return false;
   }
-  isStony(): boolean {
-    return false;
-  }
   isBoxy(): boolean {
     return false;
   }
@@ -198,9 +191,6 @@ class Flux implements Tile {
     return false;
   }
   isLock2(): boolean {
-    return false;
-  }
-  isStony(): boolean {
     return false;
   }
   isBoxy(): boolean {
@@ -253,9 +243,6 @@ class UnBreakAble implements Tile {
     return false;
   }
   isLock2(): boolean {
-    return false;
-  }
-  isStony(): boolean {
     return false;
   }
   isBoxy(): boolean {
@@ -312,9 +299,6 @@ class Stone implements Tile {
   isLock2(): boolean {
     return false;
   }
-  isStony(): boolean {
-    return true;
-  }
   isBoxy(): boolean {
     return false;
   }
@@ -364,9 +348,6 @@ class Box implements Tile {
     return false;
   }
   isLock2(): boolean {
-    return false;
-  }
-  isStony(): boolean {
     return false;
   }
   isBoxy(): boolean {
@@ -423,9 +404,6 @@ class FallingBox implements Tile {
   isLock2(): boolean {
     return false;
   }
-  isStony(): boolean {
-    return false;
-  }
   isBoxy(): boolean {
     return true;
   }
@@ -474,9 +452,6 @@ class Key1 implements Tile {
     return false;
   }
   isLock2(): boolean {
-    return false;
-  }
-  isStony(): boolean {
     return false;
   }
   isBoxy(): boolean {
@@ -533,9 +508,6 @@ class Lock1 implements Tile {
   isLock2(): boolean {
     return false;
   }
-  isStony(): boolean {
-    return false;
-  }
   isBoxy(): boolean {
     return false;
   }
@@ -584,9 +556,6 @@ class Key2 implements Tile {
     return true;
   }
   isLock2(): boolean {
-    return false;
-  }
-  isStony(): boolean {
     return false;
   }
   isBoxy(): boolean {
@@ -642,9 +611,6 @@ class Lock2 implements Tile {
   }
   isLock2(): boolean {
     return true;
-  }
-  isStony(): boolean {
-    return false;
   }
   isBoxy(): boolean {
     return false;
@@ -786,7 +752,7 @@ function updateMap() {
 }
 
 function updateTile(x: number, y: number) {
-  if ((map[y][x].isStony())
+  if ((map[y][x].isStone())
     && map[y + 1][x].isAir) {
     map[y + 1][x] = new Stone(new Resting());
     map[y][x] = new Air();
