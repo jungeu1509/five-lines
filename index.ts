@@ -451,10 +451,8 @@ function transformMap() {
     map[y] = new Array(rawMap[y].length);
     for (let x = 0; x < rawMap[y].length; x++) {
       map[y][x] = transformTile(rawMap[y][x]);
-      console.log("map[y][x]", y, x, map[y][x]);
     }
   }
-  console.log("end transformMap");
 }
 
 let inputs: Input[] = [];
@@ -507,7 +505,6 @@ function updateMap() {
 }
 
 function updateTile(x: number, y: number) {
-  console.log("map[y][x]", y, x, map[y][x]);
   if (map[y][x].isStone()
     && map[y + 1][x].isAir()) {
     map[y + 1][x] = new Stone(new Falling());
