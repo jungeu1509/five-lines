@@ -25,6 +25,8 @@ interface Tile {
   draw(g: CanvasRenderingContext2D, x: number, y: number) : void;
   moveHorizontal(dx: number): void;
   moveVertical(dy: number): void;
+  drop(): void;
+  rest(): void
 }
 
 class Air implements Tile {
@@ -57,6 +59,8 @@ class Air implements Tile {
   moveVertical(dy: number): void {
     moveToTile(playerx, playery + dy);
   }
+  drop(): void {}
+  rest(): void {}
 }
 
 class Flux implements Tile {
@@ -91,6 +95,8 @@ class Flux implements Tile {
   moveVertical(dy: number): void {
     moveToTile(playerx, playery + dy);
   }
+  drop(): void {}
+  rest(): void {}
 }
 
 class UnBreakAble implements Tile {
@@ -123,6 +129,8 @@ class UnBreakAble implements Tile {
   }
   moveVertical(dy: number): void {
   }
+  drop(): void {}
+  rest(): void {}
 }
 
 class Player implements Tile {
@@ -153,6 +161,8 @@ class Player implements Tile {
   }
   moveVertical(dy: number): void {
   }
+  drop(): void {}
+  rest(): void {}
 }
 
 interface FallingState {
@@ -213,6 +223,12 @@ class Stone implements Tile {
   }
   moveVertical(dy: number): void {
   }
+  drop(): void {
+    this.falling = new Falling();
+  }
+  rest(): void {
+    this.falling = new Resting();
+  }
 }
 
 class Box implements Tile {
@@ -247,6 +263,12 @@ class Box implements Tile {
     this.falling.moveHorizontal(this, dx);
   }
   moveVertical(dy: number): void {
+  }
+  drop(): void {
+    this.falling = new Falling();
+  }
+  rest(): void {
+    this.falling = new Resting();
   }
 }
 
@@ -284,6 +306,8 @@ class Key1 implements Tile {
     removeLock1();
     moveToTile(playerx, playery + dy);
   }
+  drop(): void {}
+  rest(): void {}
 }
 
 class Lock1 implements Tile {
@@ -316,6 +340,8 @@ class Lock1 implements Tile {
   }
   moveVertical(dy: number): void {
   }
+  drop(): void {}
+  rest(): void {}
 }
 
 class Key2 implements Tile {
@@ -352,6 +378,8 @@ class Key2 implements Tile {
     removeLock2();
     moveToTile(playerx, playery + dy);
   }
+  drop(): void {}
+  rest(): void {}
 }
 
 class Lock2 implements Tile {
@@ -384,6 +412,8 @@ class Lock2 implements Tile {
   }
   moveVertical(dy: number): void {
   }
+  drop(): void {}
+  rest(): void {}
 }
 
 interface Input {
@@ -513,10 +543,9 @@ function updateTile(x: number, y: number) {
     && map[y + 1][x].isAir()) {
     map[y + 1][x] = new Box(new Falling());
     map[y][x] = new Air();
-  } else if (map[y][x].isFallingStone()) {
-    map[y][x] = new Stone(new Resting());
-  } else if (map[y][x].isFallingBox()) {
-    map[y][x] = new Box(new Resting());
+  } else if (map[y][x].isFallingStone() 
+            || map[y][x].isFallingBox()) {
+    map[y][x].rest();
   }
 }
 
