@@ -224,8 +224,7 @@ class Key implements Tile {
     return false;
   }
   draw(g: CanvasRenderingContext2D, x: number, y: number): void {
-    this.keyConfiguration.setColor(g);
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    this.keyConfiguration.setColor(g, x, y);
   }
   moveHorizontal(dx: number): void {
     this.keyConfiguration.removeLock();
@@ -251,8 +250,7 @@ class Locker implements Tile {
     return !this.keyConfiguration.is1();
   }
   draw(g: CanvasRenderingContext2D, x: number, y: number): void {
-    this.keyConfiguration.setColor(g);
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    this.keyConfiguration.setColor(g, x, y);
   }
   moveHorizontal(dx: number): void {
   }
@@ -360,8 +358,9 @@ class KeyConfiguration {
   removeLock() {
     remove(this.removeStrategy);
   }
-  setColor(g: CanvasRenderingContext2D) {
+  setColor(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = this.color;
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
 }
 
