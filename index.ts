@@ -228,11 +228,11 @@ class Key implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   moveHorizontal(dx: number): void {
-    remove(this.keyConfiguration.getRemoveStrategy());
+    this.keyConfiguration.removeLock();
     moveToTile(playerx + dx, playery);
   }
   moveVertical(dy: number): void {
-    remove(this.keyConfiguration.getRemoveStrategy());
+    this.keyConfiguration.removeLock();
     moveToTile(playerx, playery + dy);
   }
   update(x: number, y: number): void {}
@@ -360,8 +360,8 @@ class KeyConfiguration {
   is1() {
     return this._1;
   }
-  getRemoveStrategy() {
-    return this.removeStrategy;
+  removeLock() {
+    remove(this.removeStrategy);
   }
 }
 
