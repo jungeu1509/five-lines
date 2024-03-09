@@ -25,8 +25,7 @@ interface Tile {
   draw(g: CanvasRenderingContext2D, x: number, y: number) : void;
   moveHorizontal(dx: number): void;
   moveVertical(dy: number): void;
-  drop(): void;
-  rest(): void;
+  update(x: number, y: number): void;
 }
 
 class Air implements Tile {
@@ -59,8 +58,7 @@ class Air implements Tile {
   moveVertical(dy: number): void {
     moveToTile(playerx, playery + dy);
   }
-  drop(): void {}
-  rest(): void {}
+  update(x: number, y: number): void {}
 }
 
 class Flux implements Tile {
@@ -95,8 +93,7 @@ class Flux implements Tile {
   moveVertical(dy: number): void {
     moveToTile(playerx, playery + dy);
   }
-  drop(): void {}
-  rest(): void {}
+  update(x: number, y: number): void {}
 }
 
 class UnBreakAble implements Tile {
@@ -129,8 +126,7 @@ class UnBreakAble implements Tile {
   }
   moveVertical(dy: number): void {
   }
-  drop(): void {}
-  rest(): void {}
+  update(x: number, y: number): void {}
 }
 
 class Player implements Tile {
@@ -161,8 +157,7 @@ class Player implements Tile {
   }
   moveVertical(dy: number): void {
   }
-  drop(): void {}
-  rest(): void {}
+  update(x: number, y: number): void {}
 }
 
 interface FallingState {
@@ -223,11 +218,14 @@ class Stone implements Tile {
   }
   moveVertical(dy: number): void {
   }
-  drop(): void {
-    this.falling = new Falling();
-  }
-  rest(): void {
-    this.falling = new Resting();
+  update(x: number, y: number): void {
+    if (map[y + 1][x].isAir()) {
+      this.falling = new Falling();
+      map[y + 1][x] = map[y][x];
+      map[y][x] = new Air();
+    } else if (map[y][x].isFalling()) {
+      this.falling = new Resting();
+    }
   }
 }
 
@@ -264,11 +262,14 @@ class Box implements Tile {
   }
   moveVertical(dy: number): void {
   }
-  drop(): void {
-    this.falling = new Falling();
-  }
-  rest(): void {
-    this.falling = new Resting();
+  update(x: number, y: number): void {
+    if (map[y + 1][x].isAir()) {
+      this.falling = new Falling();
+      map[y + 1][x] = map[y][x];
+      map[y][x] = new Air();
+    } else if (map[y][x].isFalling()) {
+      this.falling = new Resting();
+    }
   }
 }
 
@@ -306,8 +307,7 @@ class Key1 implements Tile {
     removeLock1();
     moveToTile(playerx, playery + dy);
   }
-  drop(): void {}
-  rest(): void {}
+  update(x: number, y: number): void {}
 }
 
 class Lock1 implements Tile {
@@ -340,8 +340,7 @@ class Lock1 implements Tile {
   }
   moveVertical(dy: number): void {
   }
-  drop(): void {}
-  rest(): void {}
+  update(x: number, y: number): void {}
 }
 
 class Key2 implements Tile {
@@ -378,8 +377,7 @@ class Key2 implements Tile {
     removeLock2();
     moveToTile(playerx, playery + dy);
   }
-  drop(): void {}
-  rest(): void {}
+  update(x: number, y: number): void {}
 }
 
 class Lock2 implements Tile {
@@ -412,8 +410,7 @@ class Lock2 implements Tile {
   }
   moveVertical(dy: number): void {
   }
-  drop(): void {}
-  rest(): void {}
+  update(x: number, y: number): void {}
 }
 
 interface Input {
@@ -535,13 +532,7 @@ function updateMap() {
 }
 
 function updateTile(x: number, y: number) {
-  if (map[y][x].canFall() && map[y + 1][x].isAir()) {
-    map[y][x].drop();
-    map[y + 1][x] = map[y][x];
-    map[y][x] = new Air();
-  } else if (map[y][x].isFalling()) {
-    map[y][x].rest();
-  }
+  map[y][x].update(x, y);
 }
 
 function createGraphics() {
