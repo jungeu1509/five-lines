@@ -16,7 +16,6 @@ enum RawTile {
 
 interface Tile {
   isAir(): boolean;
-  isFalling(): boolean;
   isLock1(): boolean;
   isLock2(): boolean;
   draw(g: CanvasRenderingContext2D, x: number, y: number) : void;
@@ -28,9 +27,6 @@ interface Tile {
 class Air implements Tile {
   isAir(): boolean {
     return true;
-  }
-  isFalling(): boolean {
-    return false;
   }
   isLock1(): boolean {
     return false;
@@ -79,9 +75,6 @@ class UnBreakAble implements Tile {
   isAir(): boolean {
     return false;
   }
-  isFalling(): boolean {
-    return false;
-  }
   isLock1(): boolean {
     return false;
   }
@@ -101,9 +94,6 @@ class UnBreakAble implements Tile {
 
 class Player implements Tile {
   isAir(): boolean {
-    return false;
-  }
-  isFalling(): boolean {
     return false;
   }
   isLock1(): boolean {
@@ -146,14 +136,29 @@ class Resting implements FallingState {
   }
 }
 
+class FallStrategy {
+  constructor(private falling: FallingState) {}
+  getFalling() {
+    return this.falling;
+  }
+  update(tile: Tile, x: number, y: number): void {
+    if (map[y + 1][x].isAir()) {
+      this.falling = new Falling();
+      map[y + 1][x] = tile;
+      map[y][x] = new Air();
+    } else if (this.falling.isFalling()) {
+      this.falling = new Resting();
+    }
+  }
+}
+
 class Stone implements Tile {
-  constructor(private falling: FallingState) {
+  private fallStrategy: FallStrategy;
+  constructor(falling: FallingState) {
+    this.fallStrategy = new FallStrategy(falling);
   }
   isAir(): boolean {
     return false;
-  }
-  isFalling(): boolean {
-    return this.falling.isFalling();
   }
   isLock1(): boolean {
     return false;
@@ -166,29 +171,22 @@ class Stone implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   moveHorizontal(dx: number): void {
-    this.falling.moveHorizontal(this, dx);
+    this.fallStrategy.getFalling().moveHorizontal(this, dx);
   }
   moveVertical(dy: number): void {
   }
   update(x: number, y: number): void {
-    if (map[y + 1][x].isAir()) {
-      this.falling = new Falling();
-      map[y + 1][x] = map[y][x];
-      map[y][x] = new Air();
-    } else if (map[y][x].isFalling()) {
-      this.falling = new Resting();
-    }
+    this.fallStrategy.update(this, x, y);
   }
 }
 
 class Box implements Tile {
-  constructor(private falling: FallingState) {
+  private fallStrategy: FallStrategy;
+  constructor(falling: FallingState) {
+    this.fallStrategy = new FallStrategy(falling);
   }
   isAir(): boolean {
     return false;
-  }
-  isFalling(): boolean {
-    return this.falling.isFalling();
   }
   isLock1(): boolean {
     return false;
@@ -201,26 +199,17 @@ class Box implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   moveHorizontal(dx: number): void {
-    this.falling.moveHorizontal(this, dx);
+    this.fallStrategy.getFalling().moveHorizontal(this, dx);
   }
   moveVertical(dy: number): void {
   }
   update(x: number, y: number): void {
-    if (map[y + 1][x].isAir()) {
-      this.falling = new Falling();
-      map[y + 1][x] = map[y][x];
-      map[y][x] = new Air();
-    } else if (map[y][x].isFalling()) {
-      this.falling = new Resting();
-    }
+    this.fallStrategy.update(this, x, y);
   }
 }
 
 class Key1 implements Tile {
   isAir(): boolean {
-    return false;
-  }
-  isFalling(): boolean {
     return false;
   }
   isLock1(): boolean {
@@ -248,9 +237,6 @@ class Lock1 implements Tile {
   isAir(): boolean {
     return false;
   }
-  isFalling(): boolean {
-    return false;
-  }
   isLock1(): boolean {
     return true;
   }
@@ -270,9 +256,6 @@ class Lock1 implements Tile {
 
 class Key2 implements Tile {
   isAir(): boolean {
-    return false;
-  }
-  isFalling(): boolean {
     return false;
   }
   isLock1(): boolean {
@@ -298,9 +281,6 @@ class Key2 implements Tile {
 
 class Lock2 implements Tile {
   isAir(): boolean {
-    return false;
-  }
-  isFalling(): boolean {
     return false;
   }
   isLock1(): boolean {
