@@ -16,9 +16,6 @@ enum RawTile {
 
 interface Tile {
   isAir(): boolean;
-  isStone(): boolean;
-  isBox(): boolean;
-  canFall(): boolean;
   isFalling(): boolean;
   isLock1(): boolean;
   isLock2(): boolean;
@@ -31,15 +28,6 @@ interface Tile {
 class Air implements Tile {
   isAir(): boolean {
     return true;
-  }
-  isStone(): boolean {
-    return false;
-  }
-  isBox(): boolean {
-    return false;
-  }
-  canFall(): boolean {
-    return false;
   }
   isFalling(): boolean {
     return false;
@@ -63,15 +51,6 @@ class Air implements Tile {
 
 class Flux implements Tile {
   isAir(): boolean {
-    return false;
-  }
-  isStone(): boolean {
-    return false;
-  }
-  isBox(): boolean {
-    return false;
-  }
-  canFall(): boolean {
     return false;
   }
   isFalling(): boolean {
@@ -100,15 +79,6 @@ class UnBreakAble implements Tile {
   isAir(): boolean {
     return false;
   }
-  isStone(): boolean {
-    return false;
-  }
-  isBox(): boolean {
-    return false;
-  }
-  canFall(): boolean {
-    return false;
-  }
   isFalling(): boolean {
     return false;
   }
@@ -131,15 +101,6 @@ class UnBreakAble implements Tile {
 
 class Player implements Tile {
   isAir(): boolean {
-    return false;
-  }
-  isStone(): boolean {
-    return false;
-  }
-  isBox(): boolean {
-    return false;
-  }
-  canFall(): boolean {
     return false;
   }
   isFalling(): boolean {
@@ -191,15 +152,6 @@ class Stone implements Tile {
   isAir(): boolean {
     return false;
   }
-  isStone(): boolean {
-    return true;
-  }
-  isBox(): boolean {
-    return false;
-  }
-  canFall(): boolean {
-    return true;
-  }
   isFalling(): boolean {
     return this.falling.isFalling();
   }
@@ -235,15 +187,6 @@ class Box implements Tile {
   isAir(): boolean {
     return false;
   }
-  isStone(): boolean {
-    return false;
-  }
-  isBox(): boolean {
-    return true;
-  }
-  canFall(): boolean {
-    return true;
-  }
   isFalling(): boolean {
     return this.falling.isFalling();
   }
@@ -277,15 +220,6 @@ class Key1 implements Tile {
   isAir(): boolean {
     return false;
   }
-  isStone(): boolean {
-    return false;
-  }
-  isBox(): boolean {
-    return false;
-  }
-  canFall(): boolean {
-    return false;
-  }
   isFalling(): boolean {
     return false;
   }
@@ -314,15 +248,6 @@ class Lock1 implements Tile {
   isAir(): boolean {
     return false;
   }
-  isStone(): boolean {
-    return false;
-  }
-  isBox(): boolean {
-    return false;
-  }
-  canFall(): boolean {
-    return false;
-  }
   isFalling(): boolean {
     return false;
   }
@@ -345,15 +270,6 @@ class Lock1 implements Tile {
 
 class Key2 implements Tile {
   isAir(): boolean {
-    return false;
-  }
-  isStone(): boolean {
-    return false;
-  }
-  isBox(): boolean {
-    return false;
-  }
-  canFall(): boolean {
     return false;
   }
   isFalling(): boolean {
@@ -382,15 +298,6 @@ class Key2 implements Tile {
 
 class Lock2 implements Tile {
   isAir(): boolean {
-    return false;
-  }
-  isStone(): boolean {
-    return false;
-  }
-  isBox(): boolean {
-    return false;
-  }
-  canFall(): boolean {
     return false;
   }
   isFalling(): boolean {
