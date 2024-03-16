@@ -3,49 +3,102 @@ const TILE_SIZE = 30;
 const FPS = 30;
 const SLEEP = 1000 / FPS;
 
-interface RawTileValue {}
-class AirValue implements RawTileValue {}
-class FluxValue implements RawTileValue {}
-class UnBreakAbleValue implements RawTileValue {}
-class PlayerValue implements RawTileValue {}
-class StoneValue implements RawTileValue {}
-class FallingStoneValue implements RawTileValue {}
-class BoxValue implements RawTileValue {}
-class FallingBoxValue implements RawTileValue {}
-class Key1Value implements RawTileValue {}
-class Lock1Value implements RawTileValue {}
-class Key2Value implements RawTileValue {}
-class Lock2Value implements RawTileValue {}
+interface RawTileValue {
+  transform(): Tile;
+}
+class AirValue implements RawTileValue {
+  transform(): Tile{
+    return new Air();
+  }
+}
+class FluxValue implements RawTileValue {
+  transform(): Tile{
+    return new Flux();
+  }
+}
+class UnBreakAbleValue implements RawTileValue {
+  transform(): Tile{
+    return new UnBreakAble();
+  }
+}
+class PlayerValue implements RawTileValue {
+  transform(): Tile{
+    return new PlayerTile();
+  }
+}
+class StoneValue implements RawTileValue {
+  transform(): Tile{
+    return new Stone(new Resting());
+  }
+}
+class FallingStoneValue implements RawTileValue {
+  transform(): Tile{
+    return new Stone(new Falling());
+  }
+}
+class BoxValue implements RawTileValue {
+  transform(): Tile{
+    return new Box(new Resting());
+  }
+}
+class FallingBoxValue implements RawTileValue {
+  transform(): Tile{
+    return new Box(new Falling());
+  }
+}
+class Key1Value implements RawTileValue {
+  transform(): Tile{
+    return new Key(YELLOW_KEY);
+  }
+}
+class Lock1Value implements RawTileValue {
+  transform(): Tile{
+    return new Locker(YELLOW_KEY);
+  }
+}
+class Key2Value implements RawTileValue {
+  transform(): Tile{
+    return new Key(BLUE_KEY);
+  }
+}
+class Lock2Value implements RawTileValue {
+  transform(): Tile{
+    return new Locker(BLUE_KEY);
+  }
+}
 
-class RawTile2 {
-  static readonly AIR = new RawTile2(new AirValue());
-  static readonly FLUX = new RawTile2(new FluxValue());
-  static readonly UNBREAKABLE = new RawTile2(new UnBreakAbleValue());
-  static readonly PLAYER = new RawTile2(new PlayerValue());
-  static readonly STONE = new RawTile2(new StoneValue());
-  static readonly FALLING_STONE = new RawTile2(new Key1Value());
-  static readonly BOX = new RawTile2(new FallingStoneValue());
-  static readonly FALLING_BOX = new RawTile2(new Lock1Value());
-  static readonly KEY1 = new RawTile2(new BoxValue());
-  static readonly LOCK1 = new RawTile2(new Key2Value());
-  static readonly KEY2 = new RawTile2(new FallingBoxValue());
-  static readonly LOCK2 = new RawTile2(new Lock2Value());
+class RawTile {
+  static readonly AIR = new RawTile(new AirValue());
+  static readonly FLUX = new RawTile(new FluxValue());
+  static readonly UNBREAKABLE = new RawTile(new UnBreakAbleValue());
+  static readonly PLAYER = new RawTile(new PlayerValue());
+  static readonly STONE = new RawTile(new StoneValue());
+  static readonly FALLING_STONE = new RawTile(new Key1Value());
+  static readonly BOX = new RawTile(new FallingStoneValue());
+  static readonly FALLING_BOX = new RawTile(new Lock1Value());
+  static readonly KEY1 = new RawTile(new BoxValue());
+  static readonly LOCK1 = new RawTile(new Key2Value());
+  static readonly KEY2 = new RawTile(new FallingBoxValue());
+  static readonly LOCK2 = new RawTile(new Lock2Value());
   private constructor(private value: RawTileValue) {}
+  transform() {
+    return this.value.transform();
+  }
 }
 
 const RAW_TILES = [
-  RawTile2.AIR,
-  RawTile2.FLUX,
-  RawTile2.UNBREAKABLE,
-  RawTile2.PLAYER,
-  RawTile2.STONE, 
-  RawTile2.FALLING_STONE,
-  RawTile2.BOX, 
-  RawTile2.FALLING_BOX,
-  RawTile2.KEY1, 
-  RawTile2.LOCK1,
-  RawTile2.KEY2, 
-  RawTile2.LOCK2
+  RawTile.AIR,
+  RawTile.FLUX,
+  RawTile.UNBREAKABLE,
+  RawTile.PLAYER,
+  RawTile.STONE, 
+  RawTile.FALLING_STONE,
+  RawTile.BOX, 
+  RawTile.FALLING_BOX,
+  RawTile.KEY1, 
+  RawTile.LOCK1,
+  RawTile.KEY2, 
+  RawTile.LOCK2
 ];
 
 interface Tile {
@@ -379,7 +432,7 @@ class Map {
     for (let y = 0; y < rawMap.length; y++) {
       this.map[y] = new Array(rawMap[y].length);
       for (let x = 0; x < rawMap[y].length; x++) {
-        this.map[y][x] = transformTile(RAW_TILES[rawMap[y][x]]);
+        this.map[y][x] = RAW_TILES[rawMap[y][x]].transform();
       }
     }
   }
@@ -442,26 +495,6 @@ let rawMap: number[][] = [
   [2, 4, 1, 1, 1, 9, 0, 2],
   [2, 2, 2, 2, 2, 2, 2, 2],
 ];
-function assertExhausted(x: never): never {
-  throw new Error("Unexpected object: " + x);
-}
-function transformTile(tile: RawTile2) {
-  switch (tile) {
-    case RawTile2.AIR: return new Air();
-    case RawTile2.PLAYER: return new PlayerTile();
-    case RawTile2.UNBREAKABLE: return new UnBreakAble();
-    case RawTile2.STONE: return new Stone(new Resting());
-    case RawTile2.FALLING_STONE: return new Stone(new Falling());
-    case RawTile2.BOX: return new Box(new Resting());
-    case RawTile2.FALLING_BOX: return new Box(new Falling());
-    case RawTile2.FLUX: return new Flux();
-    case RawTile2.KEY1: return new Key(YELLOW_KEY);
-    case RawTile2.LOCK1: return new Locker(YELLOW_KEY);
-    case RawTile2.KEY2: return new Key(BLUE_KEY);
-    case RawTile2.LOCK2: return new Locker(BLUE_KEY);
-    default: assertExhausted(tile);
-  }
-}
 
 let inputs: Input[] = [];
 
