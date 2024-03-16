@@ -19,8 +19,8 @@ interface Tile {
   isLock1(): boolean;
   isLock2(): boolean;
   draw(g: CanvasRenderingContext2D, x: number, y: number) : void;
-  moveHorizontal(dx: number): void;
-  moveVertical(dy: number): void;
+  moveHorizontal(player: Player, dx: number): void;
+  moveVertical(player: Player, dy: number): void;
   update(x: number, y: number): void;
   getBlockOnTopState(): FallingState;
 }
@@ -37,10 +37,10 @@ class Air implements Tile {
   }
   draw(g: CanvasRenderingContext2D, x: number, y: number): void {
   }
-  moveHorizontal(dx: number): void {
+  moveHorizontal(player: Player, dx: number): void {
     moveToTile(player.getX() + dx, player.getY());
   }
-  moveVertical(dy: number): void {
+  moveVertical(player: Player, dy: number): void {
     moveToTile(player.getX(), player.getY() + dy);
   }
   update(x: number, y: number): void {}
@@ -66,10 +66,10 @@ class Flux implements Tile {
     g.fillStyle = "#ccffcc";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
-  moveHorizontal(dx: number): void {
+  moveHorizontal(player: Player, dx: number): void {
     moveToTile(player.getX() + dx, player.getY());
   }
-  moveVertical(dy: number): void {
+  moveVertical(player: Player, dy: number): void {
     moveToTile(player.getX(), player.getY() + dy);
   }
   update(x: number, y: number): void {}
@@ -92,9 +92,9 @@ class UnBreakAble implements Tile {
     g.fillStyle = "#999999";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
-  moveHorizontal(dx: number): void {
+  moveHorizontal(player: Player, dx: number): void {
   }
-  moveVertical(dy: number): void {
+  moveVertical(player: Player, dy: number): void {
   }
   update(x: number, y: number): void {}
   getBlockOnTopState():FallingState {
@@ -114,9 +114,9 @@ class PlayerTile implements Tile {
   }
   draw(g: CanvasRenderingContext2D, x: number, y: number): void {
   }
-  moveHorizontal(dx: number): void {
+  moveHorizontal(player: Player, dx: number): void {
   }
-  moveVertical(dy: number): void {
+  moveVertical(player: Player, dy: number): void {
   }
   update(x: number, y: number): void {}
   getBlockOnTopState():FallingState {
@@ -188,10 +188,10 @@ class Stone implements Tile {
     g.fillStyle = "#0000cc";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
-  moveHorizontal(dx: number): void {
+  moveHorizontal(player: Player, dx: number): void {
     this.fallStrategy.moveHorizontal(this, dx);
   }
-  moveVertical(dy: number): void {
+  moveVertical(player: Player, dy: number): void {
   }
   update(x: number, y: number): void {
     this.fallStrategy.update(this, x, y);
@@ -219,10 +219,10 @@ class Box implements Tile {
     g.fillStyle = "#8b4513";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
-  moveHorizontal(dx: number): void {
+  moveHorizontal(player: Player, dx: number): void {
     this.fallStrategy.moveHorizontal(this, dx);
   }
-  moveVertical(dy: number): void {
+  moveVertical(player: Player, dy: number): void {
   }
   update(x: number, y: number): void {
     this.fallStrategy.update(this, x, y);
@@ -247,11 +247,11 @@ class Key implements Tile {
   draw(g: CanvasRenderingContext2D, x: number, y: number): void {
     this.keyConfiguration.setColor(g, x, y);
   }
-  moveHorizontal(dx: number): void {
+  moveHorizontal(player: Player, dx: number): void {
     this.keyConfiguration.removeLock();
     moveToTile(player.getX() + dx, player.getY());
   }
-  moveVertical(dy: number): void {
+  moveVertical(player: Player, dy: number): void {
     this.keyConfiguration.removeLock();
     moveToTile(player.getX(), player.getY() + dy);
   }
@@ -276,9 +276,9 @@ class Locker implements Tile {
   draw(g: CanvasRenderingContext2D, x: number, y: number): void {
     this.keyConfiguration.setColor(g, x, y);
   }
-  moveHorizontal(dx: number): void {
+  moveHorizontal(player: Player, dx: number): void {
   }
-  moveVertical(dy: number): void {
+  moveVertical(player: Player, dy: number): void {
   }
   update(x: number, y: number): void {}
   getBlockOnTopState():FallingState {
@@ -292,25 +292,25 @@ interface Input {
 
 class Right implements Input {
   handle() {
-    map[player.getY()][player.getX() + 1].moveHorizontal(1);
+    map[player.getY()][player.getX() + 1].moveHorizontal(player, 1);
   }
 }
 
 class Left implements Input {
   handle() {
-    map[player.getY()][player.getX() - 1].moveHorizontal(-1);
+    map[player.getY()][player.getX() - 1].moveHorizontal(player, -1);
   }
 }
 
 class Up implements Input {
   handle() {
-    map[player.getY() - 1][player.getX()].moveVertical(-1);
+    map[player.getY() - 1][player.getX()].moveVertical(player, -1);
   }
 }
 
 class Down implements Input {
   handle() {
-    map[player.getY() + 1][player.getX()].moveVertical(1);
+    map[player.getY() + 1][player.getX()].moveVertical(player, 1);
   }
 }
 
