@@ -348,6 +348,29 @@ class Map {
   private map: Tile[][];
   getMap() {return this.map;}
   setMap(map: Tile[][]) {this.map = map;}
+  transformMap() {
+    this.map = new Array(rawMap.length);
+    for (let y = 0; y < rawMap.length; y++) {
+      this.map[y] = new Array(rawMap[y].length);
+      for (let x = 0; x < rawMap[y].length; x++) {
+        this.map[y][x] = transformTile(rawMap[y][x]);
+      }
+    }
+  }
+  drawMap(g : CanvasRenderingContext2D) {
+    for (let y = 0; y < this.map.length; y++) {
+      for (let x = 0; x < this.map[y].length; x++) {
+        this.map[y][x].draw(g, x, y);
+      }
+    }
+  }
+  updateMap() {
+    for (let y = this.map.length - 1; y >= 0; y--) {
+      for (let x = 0; x < this.map[y].length; x++) {
+        this.map[y][x].update(map, x, y);
+      }
+    }
+  }
 }
 
 let map = new Map();
@@ -379,15 +402,6 @@ function transformTile(tile: RawTile) {
     case RawTile.KEY2: return new Key(BLUE_KEY);
     case RawTile.LOCK2: return new Locker(BLUE_KEY);
     default: assertExhausted(tile);
-  }
-}
-function transformMap() {
-  map = new Array(rawMap.length);
-  for (let y = 0; y < rawMap.length; y++) {
-    map[y] = new Array(rawMap[y].length);
-    for (let x = 0; x < rawMap[y].length; x++) {
-      map[y][x] = transformTile(rawMap[y][x]);
-    }
   }
 }
 
@@ -446,21 +460,13 @@ function moveToTile(map: Map, newx: number, newy: number) {
 
 function update() {
   handleInputs();
-  updateMap();
+  map.updateMap();
 }
 
 function handleInputs() {
   while (inputs.length > 0) {
     let input = inputs.pop();
     input.handle();
-  }
-}
-
-function updateMap() {
-  for (let y = map.getMap().length - 1; y >= 0; y--) {
-    for (let x = 0; x < map.getMap()[y].length; x++) {
-      map.getMap()[y][x].update(map, x, y);
-    }
   }
 }
 
@@ -473,16 +479,8 @@ function createGraphics() {
 
 function draw() {
   let g = createGraphics();
-  drawMap(g);
+  map.drawMap(g);
   player.drawPlayer(g);
-}
-
-function drawMap(g : CanvasRenderingContext2D) {
-  for (let y = 0; y < map.getMap().length; y++) {
-    for (let x = 0; x < map.getMap()[y].length; x++) {
-      map.getMap()[y][x].draw(g, x, y);
-    }
-  }
 }
 
 function gameLoop() {
@@ -496,7 +494,7 @@ function gameLoop() {
 }
 
 window.onload = () => {
-  transformMap();
+  map.transformMap();
   gameLoop();
 }
 
