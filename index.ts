@@ -327,11 +327,7 @@ class Player {
     this.moveToTile(map, this.x + dx, this.y + dy);
   }
   pushHorizontal(map: Map, tile: Tile, dx: number): void {
-      if (map.isAir(this.x + dx + dx, this.y)
-      && !map.isAir(this.x + dx, this.y + 1)) {
-        map.setTile(tile, this.x + dx + dx, this.y);
-      this.moveToTile(map, this.x + dx, this.y);
-    }
+    map.pushHorizontal(this, tile, this.x, this.y, dx);
   }
   moveToTile(map: Map, newx: number, newy: number): void {
     map.movePlayer(this.x, this.y, newx, newy);
@@ -374,12 +370,6 @@ class Map {
   getBlockOnTopState(x: number, y: number): FallingState {
     return this.map[y][x].getBlockOnTopState();
   }
-  isAir(x: number, y: number): boolean {
-    return this.map[y][x].isAir();
-  }
-  setTile(tile: Tile, x: number, y: number) {
-    this.map[y][x] = tile;
-  }
   movePlayer(x: number, y: number, newx: number, newy: number) {
     this.map[y][x] = new Air();
     this.map[newy][newx] = new PlayerTile();
@@ -397,6 +387,13 @@ class Map {
           this.map[y][x] = new Air();
         }
       }
+    }
+  }
+  pushHorizontal(player: Player, tile: Tile, x: number, y: number, dx: number): void {
+    if (this.map[y][x + dx + dx].isAir()
+      && !this.map[y + 1][x + dx].isAir()) {
+      this.map[y][x + dx + dx] = tile;
+      player.moveToTile(map, x + dx, y);
     }
   }
 }
