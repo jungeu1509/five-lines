@@ -102,7 +102,7 @@ class UnBreakAble implements Tile {
   }
 }
 
-class Player implements Tile {
+class PlayerTile implements Tile {
   isAir(): boolean {
     return false;
   }
@@ -331,7 +331,7 @@ function assertExhausted(x: never): never {
 function transformTile(tile: RawTile) {
   switch (tile) {
     case RawTile.AIR: return new Air();
-    case RawTile.PLAYER: return new Player();
+    case RawTile.PLAYER: return new PlayerTile();
     case RawTile.UNBREAKABLE: return new UnBreakAble();
     case RawTile.STONE: return new Stone(new Resting());
     case RawTile.FALLING_STONE: return new Stone(new Falling());
@@ -406,7 +406,7 @@ function remove(shouldRemove: RemoveStrategy) {
 
 function moveToTile(newx: number, newy: number) {
   map[playery][playerx] = new Air();
-  map[newy][newx] = new Player();
+  map[newy][newx] = new PlayerTile();
   playerx = newx;
   playery = newy;
 }
