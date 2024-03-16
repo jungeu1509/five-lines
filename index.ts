@@ -14,6 +14,37 @@ enum RawTile {
   KEY2, LOCK2
 }
 
+interface RawTileValue {}
+
+class AirValue implements RawTileValue {}
+class FluxValue implements RawTileValue {}
+class UnBreakAbleValue implements RawTileValue {}
+class PlayerValue implements RawTileValue {}
+class StoneValue implements RawTileValue {}
+class FallingStoneValue implements RawTileValue {}
+class BoxValue implements RawTileValue {}
+class FallingBoxValue implements RawTileValue {}
+class Key1Value implements RawTileValue {}
+class Lock1Value implements RawTileValue {}
+class Key2Value implements RawTileValue {}
+class Lock2Value implements RawTileValue {}
+
+class RawTile2 {
+  static readonly AIR = new RawTile2(new AirValue());
+  static readonly FLUX = new RawTile2(new FluxValue());
+  static readonly UNBREAKABLE = new RawTile2(new UnBreakAbleValue());
+  static readonly PLAYER = new RawTile2(new PlayerValue());
+  static readonly STONE = new RawTile2(new StoneValue());
+  static readonly FALLING_STONE = new RawTile2(new Key1Value());
+  static readonly BOX = new RawTile2(new FallingStoneValue());
+  static readonly FALLING_BOX = new RawTile2(new Lock1Value());
+  static readonly KEY1 = new RawTile2(new BoxValue());
+  static readonly LOCK1 = new RawTile2(new Key2Value());
+  static readonly KEY2 = new RawTile2(new FallingBoxValue());
+  static readonly LOCK2 = new RawTile2(new Lock2Value());
+  private constructor(private value: RawTileValue) {}
+}
+
 interface Tile {
   isAir(): boolean;
   isLock1(): boolean;
