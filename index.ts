@@ -3,19 +3,7 @@ const TILE_SIZE = 30;
 const FPS = 30;
 const SLEEP = 1000 / FPS;
 
-enum RawTile {
-  AIR,
-  FLUX,
-  UNBREAKABLE,
-  PLAYER,
-  STONE, FALLING_STONE,
-  BOX, FALLING_BOX,
-  KEY1, LOCK1,
-  KEY2, LOCK2
-}
-
 interface RawTileValue {}
-
 class AirValue implements RawTileValue {}
 class FluxValue implements RawTileValue {}
 class UnBreakAbleValue implements RawTileValue {}
@@ -44,6 +32,21 @@ class RawTile2 {
   static readonly LOCK2 = new RawTile2(new Lock2Value());
   private constructor(private value: RawTileValue) {}
 }
+
+const RAW_TILES = [
+  RawTile2.AIR,
+  RawTile2.FLUX,
+  RawTile2.UNBREAKABLE,
+  RawTile2.PLAYER,
+  RawTile2.STONE, 
+  RawTile2.FALLING_STONE,
+  RawTile2.BOX, 
+  RawTile2.FALLING_BOX,
+  RawTile2.KEY1, 
+  RawTile2.LOCK1,
+  RawTile2.KEY2, 
+  RawTile2.LOCK2
+];
 
 interface Tile {
   isAir(): boolean;
@@ -376,7 +379,7 @@ class Map {
     for (let y = 0; y < rawMap.length; y++) {
       this.map[y] = new Array(rawMap[y].length);
       for (let x = 0; x < rawMap[y].length; x++) {
-        this.map[y][x] = transformTile(rawMap[y][x]);
+        this.map[y][x] = transformTile(RAW_TILES[rawMap[y][x]]);
       }
     }
   }
@@ -431,7 +434,7 @@ class Map {
 
 let map = new Map();
 
-let rawMap: RawTile[][] = [
+let rawMap: number[][] = [
   [2, 2, 2, 2, 2, 2, 2, 2],
   [2, 3, 0, 1, 1, 2, 0, 2],
   [2, 4, 2, 6, 1, 2, 0, 2],
@@ -439,24 +442,23 @@ let rawMap: RawTile[][] = [
   [2, 4, 1, 1, 1, 9, 0, 2],
   [2, 2, 2, 2, 2, 2, 2, 2],
 ];
-// let map = new Map();
 function assertExhausted(x: never): never {
   throw new Error("Unexpected object: " + x);
 }
-function transformTile(tile: RawTile) {
+function transformTile(tile: RawTile2) {
   switch (tile) {
-    case RawTile.AIR: return new Air();
-    case RawTile.PLAYER: return new PlayerTile();
-    case RawTile.UNBREAKABLE: return new UnBreakAble();
-    case RawTile.STONE: return new Stone(new Resting());
-    case RawTile.FALLING_STONE: return new Stone(new Falling());
-    case RawTile.BOX: return new Box(new Resting());
-    case RawTile.FALLING_BOX: return new Box(new Falling());
-    case RawTile.FLUX: return new Flux();
-    case RawTile.KEY1: return new Key(YELLOW_KEY);
-    case RawTile.LOCK1: return new Locker(YELLOW_KEY);
-    case RawTile.KEY2: return new Key(BLUE_KEY);
-    case RawTile.LOCK2: return new Locker(BLUE_KEY);
+    case RawTile2.AIR: return new Air();
+    case RawTile2.PLAYER: return new PlayerTile();
+    case RawTile2.UNBREAKABLE: return new UnBreakAble();
+    case RawTile2.STONE: return new Stone(new Resting());
+    case RawTile2.FALLING_STONE: return new Stone(new Falling());
+    case RawTile2.BOX: return new Box(new Resting());
+    case RawTile2.FALLING_BOX: return new Box(new Falling());
+    case RawTile2.FLUX: return new Flux();
+    case RawTile2.KEY1: return new Key(YELLOW_KEY);
+    case RawTile2.LOCK1: return new Locker(YELLOW_KEY);
+    case RawTile2.KEY2: return new Key(BLUE_KEY);
+    case RawTile2.LOCK2: return new Locker(BLUE_KEY);
     default: assertExhausted(tile);
   }
 }
