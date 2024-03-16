@@ -138,8 +138,7 @@ class Falling implements FallingState {
 
   }
   drop(map: Map, tile: Tile, x: number, y: number): void {
-    map.getMap()[y+1][x] = tile;
-    map.getMap()[y][x] = new Air();
+    map.drop(tile, x, y);
   }
 }
 
@@ -158,7 +157,7 @@ class FallStrategy {
   constructor(private falling: FallingState) {}
 
   update(map: Map, tile: Tile, x: number, y: number): void {
-    this.falling = map.getMap()[y + 1][x].getBlockOnTopState();
+    this.falling = map.getBlockOnTopState(x, y + 1);
     this.falling.drop(map, tile, x, y);
   }
 
@@ -319,24 +318,23 @@ class Player {
     g.fillRect(this.x * TILE_SIZE, this.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   moveHorizontal(map: Map, dx:number): void {
-    map.getMap()[this.y][this.x + dx].moveHorizontal(map, this, dx);
+    map.moveHorizontal(this, this.x, this.y, dx);
   }
   moveVertical(map: Map, dy:number): void {
-    map.getMap()[this.y + dy][this.x].moveVertical(map, this, dy);
+    map.moveVertical(this, this.x, this.y, dy);
   }
   move(map: Map, dx:number, dy: number): void {
     this.moveToTile(map, this.x + dx, this.y + dy);
   }
   pushHorizontal(map: Map, tile: Tile, dx: number): void {
-      if (map.getMap()[this.y][this.x + dx + dx].isAir() 
-      && !map.getMap()[this.y + 1][this.x + dx].isAir()) {
-        map.getMap()[this.y][this.x + dx + dx] = tile;
+      if (map.isAir(this.x + dx + dx, this.y)
+      && !map.isAir(this.x + dx, this.y + 1)) {
+        map.setTile(tile, this.x + dx + dx, this.y);
       this.moveToTile(map, this.x + dx, this.y);
     }
   }
   moveToTile(map: Map, newx: number, newy: number): void {
-    map.getMap()[this.y][this.x] = new Air();
-    map.getMap()[newy][newx] = new PlayerTile();
+    map.movePlayer(this.x, this.y, newx, newy);
     this.x = newx;
     this.y = newy;
   }
@@ -346,8 +344,6 @@ let player = new Player();
 
 class Map {
   private map: Tile[][];
-  getMap() {return this.map;}
-  setMap(map: Tile[][]) {this.map = map;}
   transformMap() {
     this.map = new Array(rawMap.length);
     for (let y = 0; y < rawMap.length; y++) {
@@ -368,6 +364,38 @@ class Map {
     for (let y = this.map.length - 1; y >= 0; y--) {
       for (let x = 0; x < this.map[y].length; x++) {
         this.map[y][x].update(map, x, y);
+      }
+    }
+  }
+  drop(tile: Tile, x: number, y: number): void {
+    this.map[y+1][x] = tile;
+    this.map[y][x] = new Air();
+  }
+  getBlockOnTopState(x: number, y: number): FallingState {
+    return this.map[y][x].getBlockOnTopState();
+  }
+  isAir(x: number, y: number): boolean {
+    return this.map[y][x].isAir();
+  }
+  setTile(tile: Tile, x: number, y: number) {
+    this.map[y][x] = tile;
+  }
+  movePlayer(x: number, y: number, newx: number, newy: number) {
+    this.map[y][x] = new Air();
+    this.map[newy][newx] = new PlayerTile();
+  }
+  moveHorizontal(player: Player, x: number, y: number, dx: number) {
+    this.map[y][x + dx].moveHorizontal(this, player, dx);
+  }
+  moveVertical(player: Player, x: number, y: number, dy: number) {
+    this.map[y + dy][x].moveVertical(this, player, dy);
+  }
+  remove(shouldRemove: RemoveStrategy) {
+    for (let y = 0; y < this.map.length; y++) {
+      for (let x = 0; x < this.map[y].length; x++) {
+        if (shouldRemove.check(this.map[y][x])) {
+          this.map[y][x] = new Air();
+        }
       }
     }
   }
@@ -433,7 +461,7 @@ class KeyConfiguration {
     return this._1;
   }
   removeLock() {
-    remove(this.removeStrategy);
+    map.remove(this.removeStrategy);
   }
   setColor(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = this.color;
@@ -443,16 +471,6 @@ class KeyConfiguration {
 
 const YELLOW_KEY = new KeyConfiguration("#ffcc00", true, new RemoveLock1());
 const BLUE_KEY = new KeyConfiguration("#00ccff", false, new RemoveLock2());
-
-function remove(shouldRemove: RemoveStrategy) {
-  for (let y = 0; y < map.getMap().length; y++) {
-    for (let x = 0; x < map.getMap()[y].length; x++) {
-      if (shouldRemove.check(map.getMap()[y][x])) {
-        map.getMap()[y][x] = new Air();
-      }
-    }
-  }
-}
 
 function moveToTile(map: Map, newx: number, newy: number) {
   player.moveToTile(map, newx, newy);
